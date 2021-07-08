@@ -1,7 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-
-using static Microsoft.AspNetCore.Http.Results;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +8,7 @@ builder.Services.AddEndpointsApiExplorer(); // TODO: https://github.com/dotnet/a
 builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString));
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = builder.Environment.ApplicationName, Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
 });
 
 var app = builder.Build();
@@ -29,7 +26,7 @@ app.MapGet("/todos", async (TodoDbContext db) =>
 
 app.MapGet("/todos/{id}", async (TodoDbContext db, int id) =>
 {
-    return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
+    return await db.Todos.FindAsync(id) is Todo todo ? Results.Ok(todo) : Results.NotFound();
 });
 
 app.MapPost("/todos", async (TodoDbContext db, Todo todo) =>
@@ -37,7 +34,7 @@ app.MapPost("/todos", async (TodoDbContext db, Todo todo) =>
     await db.Todos.AddAsync(todo);
     await db.SaveChangesAsync();
 
-    return Created($"/todo/{todo.Id}", todo);
+    return Results.Created($"/todo/{todo.Id}", todo);
 });
 
 app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
@@ -45,13 +42,13 @@ app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
     var todo = await db.Todos.FindAsync(id);
     if (todo is null)
     {
-        return NotFound();
+        return Results.NotFound();
     }
 
     db.Todos.Remove(todo);
     await db.SaveChangesAsync();
 
-    return Ok();
+    return Results.Ok();
 });
 
 app.Run();

@@ -1,5 +1,7 @@
 ﻿// TODO: https://github.com/dotnet/aspnetcore/issues/33729
 
+using Microsoft.AspNetCore.Mvc;
+
 namespace Microsoft.AspNetCore.Http
 {
     public static class Results
