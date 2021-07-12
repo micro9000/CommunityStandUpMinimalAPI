@@ -38,12 +38,12 @@ app.MapPost("/todos", async ([FromServices] TodoDbContext db, Todo todo) =>
 
 app.MapPut("/todos/{id}", async ([FromServices] TodoDbContext db, int id, Todo todo) =>
 {
-    var todo = await db.Todos.FindAsync(id);
-    if (todo is null)
+    if (id != todo.Id)
     {
-        return Results.NotFound();
+        return Results.Status(400);
     }
-    await db.Update(todo);
+
+    db.Entry(todo).State = EntityState.Modified;
     await db.SaveChangesAsync();
 
     return Results.Ok();
