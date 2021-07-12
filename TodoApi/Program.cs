@@ -43,7 +43,7 @@ app.MapPut("/todos/{id}", async ([FromServices] TodoDbContext db, int id, Todo t
         return Results.Status(400);
     }
 
-    db.Entry(todo).State = EntityState.Modified;
+    db.Update(todo);
     await db.SaveChangesAsync();
 
     return Results.Ok();
